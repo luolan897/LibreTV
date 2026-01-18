@@ -437,12 +437,12 @@ function initPlayer(videoUrl) {
         liveDurationInfinity: false
     };
 
-    // Create new ArtPlayer instance
+// Create new ArtPlayer instance
     art = new Artplayer({
         container: '#player',
         url: videoUrl,
         type: 'm3u8',
-        title: videoTitle,
+        title: currentVideoTitle, // 确保标题显示正确
         volume: 0.8,
         isLive: false,
         muted: false,
@@ -471,6 +471,28 @@ function initPlayer(videoUrl) {
         moreVideoAttr: {
             crossOrigin: 'anonymous',
         },
+        // ========== 核心：弹幕配置插件开始 ==========
+        plugins: [
+            artplayerPluginDanmaku({
+                // 1. 你的 Vercel API 地址，注意末尾带 /
+                endpoint: 'https://my-danmu-api.vercel.app/', 
+                params: {
+                    // 2. 视频标识：使用视频标题，API 会根据这个名字去搜索匹配弹幕
+                    id: currentVideoTitle, 
+                    // 3. 你的 API Token
+                    token: 'maxver1' 
+                },
+                speed: 5, 
+                opacity: 0.8,
+                fontSize: 24,
+                color: '#FFFFFF',
+                mode: 0, 
+                bottom: '10%',
+                limit: 100, 
+                anticheat: true,
+            }),
+        ],
+        // ========== 弹幕配置插件结束 ==========
         customType: {
             m3u8: function (video, url) {
                 // 清理之前的HLS实例
